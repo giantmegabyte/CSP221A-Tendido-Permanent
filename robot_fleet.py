@@ -14,7 +14,7 @@ class InsufficientBatteryError(Exception):
 
 #1.1
 class Robot(abc.ABC):
-    
+    #base class tanan nga robot
 
     manufacturer = "robobo inc."
     population = 0
@@ -53,3 +53,14 @@ class Robot(abc.ABC):
 
     def __repr__(self):
         return f"{type(self).__name__}(name={self.name!r}, battery={self.battery!r})"
+
+#1.2
+class CleaningRobot(Robot):
+    def __init__(self, name, battery=100, dust_capacity=500):
+        super().__init__(name, battery)
+        self.dust_capacity = dust_capacity
+
+    def perform_task(self, **kwargs):
+        cost = 10
+        self.use_battery(cost)
+        return f"{self.name} vacuumed the living room (used {cost}% battery)."
