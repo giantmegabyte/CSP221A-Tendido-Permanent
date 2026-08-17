@@ -1,7 +1,20 @@
 import abc
 import logging
+import functools
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+
+
+def log_action(func):
+
+    @functools.wraps(func)
+    def wrapper(self, *args, **kwargs):
+        logging.info(f"{self.name} is starting '{func.__name__}'...")
+        result = func(self, *args, **kwargs)
+        logging.info(f"{self.name} finished '{func.__name__}'.")
+        return result
+
+    return wrapper
 
 #1.4
 class InsufficientBatteryError(Exception):
@@ -63,6 +76,7 @@ class CleaningRobot(Robot):
         super().__init__(name, battery)
         self.dust_capacity = dust_capacity
 
+    @log_action
     def perform_task(self, **kwargs):
         cost = 10
         self.use_battery(cost)
@@ -104,3 +118,4 @@ if __name__ == "__main__":
     fleet_report([r, d])
     run_task_safely(r)
     run_task_safely(d) 
+    print(f"perform_task.__name__ = {CleaningRobot.perform_task.__name__}")
