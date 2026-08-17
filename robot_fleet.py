@@ -4,7 +4,7 @@ import functools
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
-
+#1.6
 def log_action(func):
 
     @functools.wraps(func)
@@ -111,11 +111,80 @@ def run_task_safely(robot, **kwargs):
     finally:
         print(f"Current battery for {robot.name}: {robot.battery}%\n")
 
-#-test
+
+#1.8
+def demonstrate_mutable_class_attribute_trap():
+    print("=== Mutable Class Attribute Trap Demo ===")
+
+    class BuggyRobotLog:
+        tasks_done = []  # BUG: shared across ALL instances (class attribute)
+
+        def __init__(self, name):
+            self.name = name
+
+        def log_task(self, task):
+            self.tasks_done.append(task)  # mutates the SHARED list
+
+    buggy_a = BuggyRobotLog("A")
+    buggy_b = BuggyRobotLog("B")
+    buggy_a.log_task("sweep floor")
+    buggy_b.log_task("fly survey")
+
+    print("Buggy version — both instances share one list:")
+    print(f"  buggy_a.tasks_done = {buggy_a.tasks_done}")
+    print(f"  buggy_b.tasks_done = {buggy_b.tasks_done}")
+    print(f"  same object? {buggy_a.tasks_done is buggy_b.tasks_done}")
+
+    class FixedRobotLog:
+        def __init__(self, name):
+            self.name = name
+            self.tasks_done = []  # FIX: created fresh per instance in __init__
+
+        def log_task(self, task):
+            self.tasks_done.append(task)
+
+    fixed_a = FixedRobotLog("A")
+    fixed_b = FixedRobotLog("B")
+    fixed_a.log_task("sweep floor")
+    fixed_b.log_task("fly survey")
+
+    print("\nFixed version — each instance has its own list:")
+    print(f"  fixed_a.tasks_done = {fixed_a.tasks_done}")
+    print(f"  fixed_b.tasks_done = {fixed_b.tasks_done}")
+    print(f"  same object? {fixed_a.tasks_done is fixed_b.tasks_done}")
+
+
+
+
+
+
+
+#Main
 if __name__ == "__main__":
-    r = CleaningRobot("Roomba")
-    d = DroneRobot.from_config({"name": "Aqua-Drone", "battery": 15})
-    fleet_report([r, d])
-    run_task_safely(r)
-    run_task_safely(d) 
+    roomba = CleaningRobot("Roomba", battery=100, dust_capacity=750)
+    aqua_drone = DroneRobot.from_config({"name": "Aqua-Drone", "battery": 15})
+ 
+    print(repr(roomba))
+    print(repr(aqua_drone))
+    print(f"Manufacturer: {Robot.manufacturer}")
+    print(f"Population so far: {Robot.population}")
+ 
+    fleet_report([roomba, aqua_drone])
+ 
+    #Successful 
+    run_task_safely(roomba)
+ 
+    
+    run_task_safely(aqua_drone)
+ 
+    
     print(f"perform_task.__name__ = {CleaningRobot.perform_task.__name__}")
+    print(f"perform_task.__doc__  = {CleaningRobot.perform_task.__doc__}")
+ 
+    demonstrate_mutable_class_attribute_trap()
+ 
+  
+    try:
+        Robot("Generic")
+    except TypeError as e:
+        print(f"As expected, Robot is abstract: {e}")
