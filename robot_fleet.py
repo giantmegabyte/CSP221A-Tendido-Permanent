@@ -1,10 +1,22 @@
 import abc
 
+#1.4
+class InsufficientBatteryError(Exception):
+    def __init__(self, robot_name, required, available):
+        self.robot_name = robot_name
+        self.required = required
+        self.available = available
+        message = (
+            f"{robot_name} needs {required}% battery for this task "
+            f"but only has {available}%."
+        )
+        super().__init__(message)
 
+#1.1
 class Robot(abc.ABC):
-    """Abstract base class for all robots in the fleet."""
+    
 
-    manufacturer = "RoboCorp Industries"
+    manufacturer = "robobo inc."
     population = 0
 
     def __init__(self, name, battery=100):
@@ -18,17 +30,22 @@ class Robot(abc.ABC):
         return self._battery
 
     @battery.setter
+    
     def battery(self, value):
         self._battery = max(0, min(100, value))
 
+    def use_battery(self, amount):
+        
+        if amount > self._battery:
+            raise InsufficientBatteryError(self.name, amount, self._battery)
+        self.battery -= amount 
+
     @abc.abstractmethod
     def perform_task(self, **kwargs):
-        """Every subclass must implement its own task behavior."""
         raise NotImplementedError
 
     @classmethod
     def from_config(cls, config):
-        """Alternative constructor: build a robot from a dict."""
         return cls(**config)
 
     def __str__(self):
