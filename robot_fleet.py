@@ -1,4 +1,7 @@
 import abc
+import logging
+
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
 #1.4
 class InsufficientBatteryError(Exception):
@@ -64,3 +67,22 @@ class CleaningRobot(Robot):
         cost = 10
         self.use_battery(cost)
         return f"{self.name} vacuumed the living room (used {cost}% battery)."
+
+#1.3
+def fleet_report(robots):
+    
+    print("\n--- Fleet Status Report ---")
+    for robot in robots:
+        print(f"  {str(robot)}")
+    print("---------------------------\n")
+
+#1.5
+def run_task_safely(robot, **kwargs):
+    try:
+        result = robot.perform_task(**kwargs)
+    except InsufficientBatteryError as e:
+        logging.error(str(e))
+    else:
+        print(f"Task result: {result}")
+    finally:
+        print(f"Current battery for {robot.name}: {robot.battery}%\n")
