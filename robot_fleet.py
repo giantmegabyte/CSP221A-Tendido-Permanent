@@ -68,9 +68,19 @@ class CleaningRobot(Robot):
         self.use_battery(cost)
         return f"{self.name} vacuumed the living room (used {cost}% battery)."
 
+class DroneRobot(Robot):
+    def __init__(self, name, battery=100, max_altitude=120):
+        super().__init__(name, battery)
+        self.max_altitude = max_altitude
+
+    def perform_task(self, **kwargs):
+        cost = 25
+        self.use_battery(cost)
+        return f"{self.name} completed an aerial survey (used {cost}% battery)."
+
+
 #1.3
 def fleet_report(robots):
-    
     print("\n--- Fleet Status Report ---")
     for robot in robots:
         print(f"  {str(robot)}")
@@ -86,3 +96,11 @@ def run_task_safely(robot, **kwargs):
         print(f"Task result: {result}")
     finally:
         print(f"Current battery for {robot.name}: {robot.battery}%\n")
+
+#-test
+if __name__ == "__main__":
+    r = CleaningRobot("Roomba")
+    d = DroneRobot.from_config({"name": "Aqua-Drone", "battery": 15})
+    fleet_report([r, d])
+    run_task_safely(r)
+    run_task_safely(d) 
