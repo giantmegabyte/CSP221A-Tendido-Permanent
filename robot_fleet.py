@@ -116,14 +116,15 @@ def run_task_safely(robot, **kwargs):
 def demonstrate_mutable_class_attribute_trap():
     print("=== Mutable Class Attribute Trap Demo ===")
 
+    
     class BuggyRobotLog:
-        tasks_done = []  # BUG: shared across ALL instances (class attribute)
+        tasks_done = []  # BUG: 
 
         def __init__(self, name):
             self.name = name
 
         def log_task(self, task):
-            self.tasks_done.append(task)  # mutates the SHARED list
+            self.tasks_done.append(task)  
 
     buggy_a = BuggyRobotLog("A")
     buggy_b = BuggyRobotLog("B")
@@ -135,10 +136,11 @@ def demonstrate_mutable_class_attribute_trap():
     print(f"  buggy_b.tasks_done = {buggy_b.tasks_done}")
     print(f"  same object? {buggy_a.tasks_done is buggy_b.tasks_done}")
 
+    
     class FixedRobotLog:
         def __init__(self, name):
             self.name = name
-            self.tasks_done = []  # FIX: created fresh per instance in __init__
+            self.tasks_done = []  
 
         def log_task(self, task):
             self.tasks_done.append(task)
@@ -152,11 +154,6 @@ def demonstrate_mutable_class_attribute_trap():
     print(f"  fixed_a.tasks_done = {fixed_a.tasks_done}")
     print(f"  fixed_b.tasks_done = {fixed_b.tasks_done}")
     print(f"  same object? {fixed_a.tasks_done is fixed_b.tasks_done}")
-
-
-
-
-
 
 
 #Main
