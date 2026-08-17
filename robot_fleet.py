@@ -51,7 +51,7 @@ class Robot(abc.ABC):
         self._battery = max(0, min(100, value))
 
     def use_battery(self, amount):
-        print("DEBUG: use_battery called with", amount)
+        
         if amount > self._battery:
             raise InsufficientBatteryError(self.name, amount, self._battery)
         self.battery -= amount 
